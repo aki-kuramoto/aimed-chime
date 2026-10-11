@@ -1,0 +1,3 @@
+# Line endings: LF everywhere except .bat (CRLF). Checkout keeps the repository's line endings as they are.
+* text=auto eol=lf
+*.bat -text

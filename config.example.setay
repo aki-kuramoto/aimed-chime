@@ -1,0 +1,29 @@
+# aimed-chime config. Put it at ~/.app-data/aimed-chime/config.setay.
+# It is read again on every call, so edits take effect from the next call (no server restart needed).
+{
+	# Description and volumes per output device. list_devices lays these over the actual devices.
+	#   match         ... part of the device name or UID (case-insensitive); must match exactly one output device
+	#   remarks       ... anything agents should know when choosing the device, e.g. what it is or which kind of work it is for
+	#   default       ... used when device is omitted (at most one device), e.g. { match = 'Desk Speaker'; default; }
+	#   chime-volume  ... chime volume on this device (defaults to the global value below)
+	#   speech-volume ... speech volume on this device (defaults to the global value below)
+	devices = [
+		{
+			match = 'Desk Speaker';
+			remarks = 'USB speaker on the desk. Use it for research and development work.';
+		},
+		{
+			match = 'Living Room';
+			remarks = 'Speaker in the living room, audible away from the desk. Use it for long-running work.';
+			chime-volume = 4;
+		},
+	];
+
+	# Global defaults (multipliers, like ffmpeg's volume filter)
+	chime-volume = 6;
+	speech-volume = 1.4;
+
+	# Text-to-speech voice. Omit it to use the system's default voice.
+	# macOS: a name from `say -v '?'`. Windows: a SAPI voice name, e.g. 'Microsoft Haruka Desktop'.
+	# voice = 'name of an installed voice';
+}
