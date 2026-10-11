@@ -15,6 +15,7 @@ import (
 const Version = "0.1.0"
 
 // Instructions are the server-wide instructions that clients show to the model.
+// The instructions in the config file are added to them when the server starts.
 const Instructions = `aimed-chime: play a chime or speak text on a chosen audio output device.
 
 The device is chosen by name, per call. list_devices shows each output device with the remarks
@@ -25,11 +26,17 @@ output.`
 
 // New creates the MCP server.
 func New(p *sound.Player) *mcp.Server {
+	// Clients read the server instructions only when a session starts, so the config file's
+	// instructions are also added to every tool result, which picks up edits without a restart.
+	instructions := Instructions
+	if cfg, err := sound.LoadConfig(p.ConfigPath); err == nil {
+		instructions += userInstructions(cfg.Instructions)
+	}
 	srv := mcp.NewServer(&mcp.Implementation{
 		Name:    "aimed-chime",
 		Title:   "Chime or speak on a chosen audio device",
 		Version: Version,
-	}, &mcp.ServerOptions{Instructions: Instructions})
+	}, &mcp.ServerOptions{Instructions: instructions})
 	h := &handlers{p: p}
 	h.register(srv)
 	return srv
@@ -37,6 +44,27 @@ func New(p *sound.Player) *mcp.Server {
 
 type handlers struct {
 	p *sound.Player
+}
+
+// userInstructions formats the instructions from the config file, or returns "" when there are none.
+func userInstructions(lines []string) string {
+	if len(lines) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString("\n\nInstructions from the user (written in the config file; follow them when using these tools):")
+	for _, l := range lines {
+		b.WriteString("\n- " + l)
+	}
+	return b.String()
+}
+
+// result adds the config file's current instructions to a successful tool result.
+func (h *handlers) result(s string) *mcp.CallToolResult {
+	if cfg, err := sound.LoadConfig(h.p.ConfigPath); err == nil {
+		s += userInstructions(cfg.Instructions)
+	}
+	return textResult(s)
 }
 
 const deviceDesc = "part of the output device's name or UID as shown by list_devices (case-insensitive; must match exactly one output device). " +
@@ -57,7 +85,7 @@ func (h *handlers) chime(ctx context.Context, req *mcp.CallToolRequest, in chime
 	if err != nil {
 		return errResult(err), nil, nil
 	}
-	return textResult(fmt.Sprintf("played the chime %d time(s) on %s", in.Count, d)), nil, nil
+	return h.result(fmt.Sprintf("played the chime %d time(s) on %s", in.Count, d)), nil, nil
 }
 
 // --- speak --------------------------------------------------------------
@@ -72,7 +100,7 @@ func (h *handlers) speak(ctx context.Context, req *mcp.CallToolRequest, in speak
 	if err != nil {
 		return errResult(err), nil, nil
 	}
-	return textResult(fmt.Sprintf("spoke on %s with voice %s", d, voice)), nil, nil
+	return h.result(fmt.Sprintf("spoke on %s with voice %s", d, voice)), nil, nil
 }
 
 // --- list_devices -------------------------------------------------------
@@ -119,8 +147,9 @@ func ListText(l sound.Listing) string {
 			fmt.Fprintf(&b, "- %s\n", d)
 		}
 	}
-	fmt.Fprintf(&b, "Config file: %s\n", l.ConfigPath)
-	return b.String()
+	fmt.Fprintf(&b, "Config file: %s", l.ConfigPath)
+	b.WriteString(userInstructions(l.Config.Instructions))
+	return b.String() + "\n"
 }
 
 // --- registration -------------------------------------------------------

@@ -26,4 +26,10 @@
 	# Text-to-speech voice. Omit it to use the system's default voice.
 	# macOS: a name from `say -v '?'`. Windows: a SAPI voice name, e.g. 'Microsoft Haruka Desktop'.
 	# voice = 'name of an installed voice';
+
+	# Instructions to agents on how to use the tools, one item per instruction.
+	# They are added to the MCP server instructions (read when a session starts) and to every tool result.
+	# instructions = [
+	# 	'To call me, play the chime once, then speak a phrase that tells which session is calling, e.g. the project name.',
+	# ];
 }

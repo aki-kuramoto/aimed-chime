@@ -33,6 +33,7 @@ commands:
 config: ~/.app-data/aimed-chime/config.setay (optional; read again on every call)
   devices = [ { match; remarks; default; chime-volume; speech-volume }, ... ]
   chime-volume (default 6), speech-volume (default 1.4), voice (default: system voice), ffmpeg
+  instructions = [ '...', ... ]   instructions to agents, added to the MCP server instructions and tool results
 `
 
 func main() {

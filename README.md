@@ -63,6 +63,11 @@ See [config.example.setay](config.example.setay).
 | `speech-volume` | 1.4 | Speech volume (a multiplier, like `chime-volume`) |
 | `voice` | system default | Text-to-speech voice. macOS: a name from `say -v '?'`. Windows: a SAPI voice name such as `Microsoft Haruka Desktop`; an unknown name fails with the list of installed voices |
 | `ffmpeg` | auto | Path to ffmpeg (macOS only; Windows does not use ffmpeg). Otherwise PATH and the usual install locations are searched |
+| `instructions` | none | List of instructions to agents on how to use the tools, e.g. how to call you. See below |
+
+`instructions` is for rules that differ from user to user, for example "play the chime once, then speak a phrase that tells which session is calling".
+They are added to the MCP server instructions, which MCP clients read when a session starts, and to the results of `chime`, `speak` and `list_devices`,
+so edits also reach sessions that are already running from their next call.
 
 ## Trying it by hand
 
@@ -165,6 +170,11 @@ AI エージェントが、チャイムや音声の読み上げでユーザー�
 | `speech-volume` | 1.4 | 読み上げの音量 (`chime-volume` と同じ倍率) |
 | `voice` | システムの声 | 読み上げの声。macOS では `say -v '?'` に出る名前、Windows では `Microsoft Haruka Desktop` のような SAPI の声の名前です。無い名前を指定すると、インストール済みの声の一覧つきでエラーにします |
 | `ffmpeg` | 自動 | ffmpeg のパス (macOS のみ。Windows では ffmpeg を使いません)。指定が無ければ PATH とよくある場所から探します |
+| `instructions` | なし | ツールの使い方についての、エージェントへの指示のリスト。たとえば、どのように呼んでほしいか。下を見てください |
+
+`instructions` は、人によって違う決まりを書くためのものです。たとえば「チャイムを 1 回鳴らしたあと、どのセッションからの呼び出しか分かる言葉を読み上げる」のような決まりです。
+MCP サーバーの instructions (MCP クライアントがセッションの開始時に読みます) と、`chime`、`speak`、`list_devices` の結果に付け足すので、
+書き換えると、すでに動いているセッションにも次の呼び出しから伝わります。
 
 ## 手で試す
 

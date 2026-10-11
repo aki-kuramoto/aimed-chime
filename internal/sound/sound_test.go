@@ -49,6 +49,7 @@ func TestLoadConfig(t *testing.T) {
 		{ match = 'Headset'; remarks = 'day-to-day work'; chime-volume = 3; },
 	];
 	chime-volume = 5;
+	instructions = [ 'chime once, then speak', 'say which session is calling', ];
 }`), 0o644)
 	c, err := LoadConfig(path)
 	if err != nil {
@@ -58,6 +59,9 @@ func TestLoadConfig(t *testing.T) {
 	e := c.entryFor(desk)
 	if e == nil || !e.Default || e.Remarks != "research work" || c.chimeVolume(e) != 5 || c.speechVolume(e) != 2 {
 		t.Errorf("desk speaker entry: %+v", e)
+	}
+	if len(c.Instructions) != 2 || c.Instructions[1] != "say which session is calling" {
+		t.Errorf("instructions: %q", c.Instructions)
 	}
 	hs := c.entryFor(Device{Name: "Example USB Headset"})
 	if hs == nil || c.chimeVolume(hs) != 3 || c.speechVolume(hs) != 1.4 {

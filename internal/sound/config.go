@@ -18,6 +18,7 @@ type Config struct {
 	SpeechVolume float64        `setay:"speech-volume"` // default 1.4
 	Voice        string         `setay:"voice"`         // text-to-speech voice; empty means the system default voice
 	FFmpeg       string         `setay:"ffmpeg"`        // empty means search PATH and the usual install locations
+	Instructions []string       `setay:"instructions"`  // the user's instructions to agents on how to use the tools
 }
 
 // DeviceConfig is the description and volumes of one device.
